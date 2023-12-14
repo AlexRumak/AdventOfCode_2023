@@ -9,26 +9,25 @@ fn main() {
     for line in contents.lines() {
         let forward_iter = line.chars();
         let reverse_iter = line.chars().rev();
-        
+
         let mut first_char: Option<char> = None;
         let mut sec_char: Option<char> = None;
+        let mut first_digit_index = 0; 
         for el in forward_iter {
             if el.is_digit(10) {
                 first_char = Some(el);
                 break;
             }
+            first_digit_index += 1;
         }
-
+        
+        let mut sec_digit_index = 0;
         for el in reverse_iter {
             if el.is_digit(10) {
                 sec_char = Some(el);
                 break;
             }
+            sec_digit_index += 1;
         }
-        
-        let digits = format!("{}{}", first_char.unwrap(), sec_char.unwrap());
-        sum += digits.parse::<i32>().unwrap();
     }
-
-    println!("Answer: {sum}");
 }
