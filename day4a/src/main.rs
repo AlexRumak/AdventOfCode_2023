@@ -13,12 +13,12 @@ fn main() {
             .expect("Should be the game");
 
         let mut game = game.split('|');
-        let mut your_numbers: HashSet<&str> = HashSet::from_iter(game.next()
+        let your_numbers: HashSet<&str> = HashSet::from_iter(game.next()
             .expect("Should be your numbers")
             .split_ascii_whitespace()
             .filter(|&x| !x.is_empty()));
 
-        let mut winning_numbers: HashSet<&str> = HashSet::from_iter(game.next()
+        let winning_numbers: HashSet<&str> = HashSet::from_iter(game.next()
             .expect("Should be the winning numbers")
             .split_ascii_whitespace()
             .filter(|&x| !x.is_empty()));
