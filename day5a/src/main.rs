@@ -1,5 +1,6 @@
 use std::fs;
 
+// TODO: Write a faster algorithm for this problem.
 fn main() {
     let contents = fs::read_to_string("input.txt")
         .expect("Should have been able to read input.txt");
