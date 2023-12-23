@@ -84,7 +84,7 @@ fn card_value(a_char: char) -> u32 {
         'A' => 14,
         'K' => 13,
         'Q' => 12,
-        'J' => 11,
+        'J' => 1,
         'T' => 10,
         c => c.to_digit(10).expect("Should be number")
     }
@@ -110,37 +110,57 @@ fn get_hand_strength(hand: &str) -> u32 {
         }
     }
 
+    get_value_from_map(hand_map)
+}
+
+fn get_value_from_map(hand_map: HashMap<char, u32>) -> u32 {
+    let mut replaced_jack_hand_val = 0;
+
+    if hand_map.contains_key(&'J') {
+        let mut removed_jack_map = hand_map.clone();
+        let value = removed_jack_map.get(&'J').expect("Should have a J").clone();
+        removed_jack_map.remove(&'J');
+
+        for key in removed_jack_map.keys() {
+            let mut cloned_map = removed_jack_map.clone();
+            cloned_map.insert(*key, cloned_map.get(key).unwrap() + value);
+            replaced_jack_hand_val = u32::max(get_value_from_map(cloned_map), replaced_jack_hand_val);
+        }
+    }
+
+    let mut regular_hand_value = 0;
     if hand_map.len() == 1 {
-        return 100000; // Five of a kind
+        regular_hand_value = 100000; // Five of a kind
     }
 
     if hand_map.len() == 2 {
         if hand_map.values().any(|f| *f == 4) {
             // four of a kind
-            return 10000;
+            regular_hand_value = 10000;
         }
         else {
             // full house
-            return 1000;
+            regular_hand_value = 1000;
         }
     }
 
     if hand_map.len() == 3 {
         if !hand_map.values().any(|f| *f == 3) {
             // two pair
-            return 10;
+            regular_hand_value = 10;
         }
         else {
             // three of a kind
-            return 100;
+            regular_hand_value = 100;
         }
     }
 
     if hand_map.len() == 4 {
-        return 1; // One pair
+        regular_hand_value = 1; // One pair
     }
 
-    0 // High card
+    u32::max(regular_hand_value, replaced_jack_hand_val)
+    // High card
 }
 
 fn parse_content<'a>(contents: &'a String) -> Vec<Hand<'a>> {
@@ -177,6 +197,7 @@ mod tests {
             Hand { hand: "55555", bid: 1},
             Hand { hand: "K3591", bid: 1},
             Hand { hand: "KK332", bid: 1},
+            Hand { hand: "JJJJJ", bid: 1},
         ];
 
         sort_hands(&mut hands);
@@ -189,7 +210,8 @@ mod tests {
         assert_eq!(hands[5].hand, "KK332");
         assert_eq!(hands[6].hand, "KK333");
         assert_eq!(hands[7].hand, "KKKK2");
-        assert_eq!(hands[8].hand, "55555");
+        assert_eq!(hands[8].hand, "JJJJJ");
+        assert_eq!(hands[9].hand, "55555");
 
 
     }
